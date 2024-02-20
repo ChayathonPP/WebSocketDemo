@@ -5,11 +5,13 @@ import {useAppSelector} from "../store/hooks.ts";
 import {selectUsername} from "../store/Slices/usernameSlice.ts"
 import {selectWebSocket, messageType} from "../store/Slices/webSocketSlice.ts";
 import JoinLeaveMessage from "./joinLeaveMessage.tsx";
+import { selectUserCount } from "../store/Slices/userCountSlice.ts"
 
 export default function ChatBox() {
     const {sendMessage} = useWebSocket()
     const [typedMessage, setTypedMessage] = useState<string>("")
     const username = useAppSelector(selectUsername)
+    const userCount= useAppSelector(selectUserCount)
     const webSocketState = useAppSelector(selectWebSocket)
     return (
         <>
@@ -18,7 +20,7 @@ export default function ChatBox() {
                     <h1 className="text-3xl font-extrabold text-gray-800">Group Chat</h1>
                     <p className="text-gray-600">Welcome to the chat room!</p>
                     <p>
-                        Online persons : <strong>fix me pls</strong>
+                        Online persons : <strong>{userCount}</strong>
                     </p>
                 </div>
 

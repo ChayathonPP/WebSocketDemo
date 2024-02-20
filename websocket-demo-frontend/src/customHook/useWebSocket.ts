@@ -5,6 +5,7 @@ import SockJS from "sockjs-client/dist/sockjs";
 import {useAppDispatch, useAppSelector} from "../store/hooks.ts";
 import {setIsConnected, appendMessage,setStompClient} from "../store/Slices/webSocketSlice.ts";
 import {selectWebSocket} from "../store/Slices/webSocketSlice.ts";
+import { setUserCount } from "../store/Slices/userCountSlice.ts";
 
 function useWebSocket(){
     const dispatch = useAppDispatch()
@@ -36,10 +37,16 @@ function useWebSocket(){
 
     const onConnected = (stompClient : Stomp.Client, username : string) => {
         stompClient.subscribe('/topic/public', onMessageReceived);
+        stompClient.subscribe('/topic/userCount', onUserCountReceived);
         stompClient.send("/app/chat.addUser", {}, JSON.stringify({ sender: username, type: 'JOIN', timestamp: new Date().toLocaleTimeString() }));
         dispatch(setIsConnected(true))
         dispatch(setStompClient(stompClient))
     }
+
+    const onUserCountReceived = (payload : Stomp.Message) => {
+            dispatch(setUserCount(JSON.parse(payload.body)))
+    }
+
     const onMessageReceived = (payload : Stomp.Message) => {
         dispatch(appendMessage(JSON.parse(payload.body)))
     }
